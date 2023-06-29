@@ -1,4 +1,8 @@
-export POSH_THEME='atomicBit'
+export MY_POSH_DIR="$(dirname $(realpath $BASH_SOURCE))"
+export POSH_THEME='blueish' # Very good.
+export POSH_THEME_PATH=$MY_POSH_DIR/base.yml
+export POSH_CONFIG="$POSH_THEME_PATH"
+# export POSH_THEME='atomicBit'
 # export POSH_THEME='atomic'
 # export POSH_THEME='powerlevel10k_classic'
 # export POSH_THEME='emodipt-extend'
@@ -11,7 +15,7 @@ omp_start_time=""
 # start timer on command start
 PS0='${omp_start_time:0:$((omp_start_time="$(_omp_start_timer)",0))}$(_omp_ftcs_command_start)'
 # set secondary prompt
-PS2="$(/usr/local/bin/oh-my-posh print secondary --config="$POSH_THEME" --shell=bash --shell-version="$BASH_VERSION")"
+PS2="$(/usr/local/bin/oh-my-posh print secondary --config="$POSH_CONFIG" --shell=bash --shell-version="$BASH_VERSION")"
 
 function _set_posh_cursor_position() {
       # not supported in Midnight Commander
@@ -61,7 +65,7 @@ function _omp_hook() {
     fi
     set_poshcontext
     _set_posh_cursor_position
-    PS1="$(/usr/local/bin/oh-my-posh print primary --config="$POSH_THEME" --shell=bash --shell-version="$BASH_VERSION" --error="$ret" --execution-time="$omp_elapsed" --stack-count="$omp_stack_count" --no-exit-code="$no_exit_code" | tr -d '\0')"
+    PS1="$(/usr/local/bin/oh-my-posh print primary --config="$POSH_CONFIG" --shell=bash --shell-version="$BASH_VERSION" --error="$ret" --execution-time="$omp_elapsed" --stack-count="$omp_stack_count" --no-exit-code="$no_exit_code" | tr -d '\0')"
     return $ret
 }
 
@@ -74,7 +78,9 @@ if [ "false" == "true" ]; then
 fi
 
 
-eval $(oh-my-posh init bash --config "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/$POSH_THEME.omp.json")
+eval $(oh-my-posh init bash --config $POSH_CONFIG)
+
+# eval $(oh-my-posh init bash --config "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/$POSH_CONFIG.omp.json")
 
 
 # function _set_posh_cursor_position() {
@@ -125,7 +131,7 @@ eval $(oh-my-posh init bash --config "https://raw.githubusercontent.com/JanDeDob
 #     fi
 #     set_poshcontext
 #     _set_posh_cursor_position
-#     PS1="$(/usr/local/bin/oh-my-posh print primary --config="$POSH_THEME" --shell=bash --shell-version="$BASH_VERSION" --error="$ret" --execution-time="$omp_elapsed" --stack-count="$omp_stack_count" --no-exit-code="$no_exit_code" | tr -d '\0')"
+#     PS1="$(/usr/local/bin/oh-my-posh print primary --config="$POSH_CONFIG" --shell=bash --shell-version="$BASH_VERSION" --error="$ret" --execution-time="$omp_elapsed" --stack-count="$omp_stack_count" --no-exit-code="$no_exit_code" | tr -d '\0')"
 #     return $ret
 # }
 

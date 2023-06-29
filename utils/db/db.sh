@@ -1,9 +1,13 @@
 #!/bin/bash
 
 # Define color codes
+DIMMED='\033[0;30m'
 RED='\033[0;31m'
+GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+PINK='\033[0;35m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # The root directory of the repository
@@ -13,10 +17,13 @@ repo_dir=$(dirname "${BASH_SOURCE[0]}")
 utils_db_file="${repo_dir}/db.json"
 
 alias dbdump="cat $repo_dir"
-# alias echo_opts='eval "[[ $1 == -n && -n $2 ]] && shift && opts=-n"'
+alias echo_opts='eval "[[ $1 == -n && -n $2 ]] && shift && opts=-n"'
 log_blue() { echo "${BLUE}$*${NC}"; }
 log_yellow() { echo "${YELLOW}$*${NC}"; }
 log_red() { echo "${RED}$*${NC}"; }
+log_green() { echo "${GREEN}$*${NC}"; }
+log_cyan() { echo "${CYAN}$*${NC}"; }
+log_pink() { echo "${PINK}$*${NC}"; }
 # log_blue() { echo "${BLUE}$*${NC}"; }
 
 # Colored logging functions
@@ -30,6 +37,10 @@ log_warn() {
 
 log_error() {
     printf "${RED}[ERROR] ${NC}%s\n" "$1"
+}
+
+log_debug() {
+    printf "${PINK}[DEBUG] ${NC}%s\n" "$1"
 }
 
 # Check if jq is installed
@@ -59,11 +70,17 @@ _db-set() {
         log_error "Missing key or value for set operation"
         return 1
     fi
-    local updated_json="$(_jq_set_value "$key" "$value" <(cat "$utils_db_file"))
-    local json_path=".${key//./.}"
-    echo jq "$json_path = \"$value\"" "$utils_db_file" > tmp.json && mv tmp.json "$utils_db_file"
-    jq "$json_path = \"$value\"" "$utils_db_file" > tmp.json && mv tmp.json "$utils_db_file"
-    log "Set $key = $value"
+    local json="$(cat "$utils_db_file")"
+    log_debug "json:\n $json"
+    local updated_json="$(_jq_set_value "$key" "$value" "$json")"
+    log_debug "updated_json:\n$updated_json"
+
+    [[ -z $updated_json ]] && log_error "jq didn't return any json" && return 1
+    echo "$updated_json" > $utils_db_file && log "Set $key = $value" || log_error "Failed to write json to file."
+    # local json_path=".${key//./.}"
+    # echo jq "$json_path = \"$value\"" "$utils_db_file" > tmp.json && mv tmp.json "$utils_db_file"
+    # jq "$json_path = \"$value\"" "$utils_db_file" > tmp.json && mv tmp.json "$utils_db_file"
+    
 }
 
 _jq_set_value() {
@@ -86,9 +103,9 @@ _jq_set_value() {
     local val_args=(--arg val "$value")
     $value_is_json && val_args[0]='--argjson'
 
-    local updated_json="$(
-        echo "$json" |
-            jq --arg key_path "$key" "${val_args[@]}" '. | setpath(($key_path |  split(".")); $val)')"
+    log_debug echo "$json" | jq --arg key_path "$key" "${val_args[@]}" '. | setpath(($key_path |  split(".")); $val)'
+
+    local updated_json="$(echo "$json" | jq --arg key_path "$key" "${val_args[@]}" '. | setpath(($key_path |  split(".")); $val)')"
     echo "$updated_json"
 }
 
@@ -100,8 +117,9 @@ _db-get() {
     ensure_db_exists
 
     if [ -z "$key" ]; then
-        log_error "Missing key for get operation"
-        return 1
+        log_warn "No key supplied"
+        jq -r "$json_path" "$utils_db_file"
+        return
     fi
     local json_path=".${key//./.}"
     local value
@@ -170,8 +188,10 @@ db() {
 # Installation script
 install_db() {
     local bashrc="${HOME}/.bashrc"
-    if ! grep -q "source $(realpath ${BASH_SOURCE[0]})" "$bashrc"; then
-        echo "source $(realpath ${BASH_SOURCE[0]})" >> "$bashrc"
+    local init_path=$(realpath ${BASH_SOURCE[0]})
+    [[ $init_path =~ /tmp ]] && log_error "Invalid path for this file: $init_path" && return 1
+    if ! grep -q "source $init_path" "$bashrc"; then
+        echo "source '$init_path'" >> "$bashrc"
         log "db command installed. Please reload your bashrc or restart your terminal to use it."
     else
         log_warn "db command already installed."

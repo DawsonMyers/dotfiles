@@ -1,3 +1,4 @@
+export DOTFILES_DIR="$(dirname $(realpath $BASH_SOURCE))"
 shopt -s dotglob;
 
 # for file in ~/dotfiles/configs/*; do
@@ -5,10 +6,18 @@ shopt -s dotglob;
 # done
 
 function source_dir() {
-    for file in ~/dotfiles/$1/*; do
-        . "$file"
+    local file 
+    local pattern='*.sh'
+    [[ $1 == --init-only ]] && shift && pattern='*init.sh'
+    for file in $(find $1 -name "$pattern"); do
+    # for file in $HOME/dotfiles/$1/*; do
+        echo "init::file $file"
+        ll $file
+        [[ -d $file ]] && echo 'dir found' && source_dir "$file" && continue
+        # [[ -f $file && $file == $pattern$ ]] && . "$file" && echo "Sourced: $file"
+        . "$file" # && echo "Sourced: $file"
     done
 }
 
-source_dir configs
-source_dir env-utils
+source_dir $DOTFILES_DIR/configs
+source_dir $DOTFILES_DIR/env-utils

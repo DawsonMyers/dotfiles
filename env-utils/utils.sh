@@ -38,7 +38,7 @@ function activate_venv() {
     fi
 }
 
-alias actv=activate_venv
+alias actv='activate_venv '
 alias cac='conda activate '
 
 is_alias() {
@@ -59,4 +59,12 @@ e() {
     fi
 }
 
+# Prints out a clickable hyperlink without actually printing the URL.
+# https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
+hyperlink() {
+    local link=$1 label=$2
+    # printf '\e]8;;http://example.com\e\\This is a link\e]8;;\e\\\n'
+    printf "\e]8;;$link\e\\$label\e]8;;\e\\\n"
+}
 
+# echo utils.sh loaded
