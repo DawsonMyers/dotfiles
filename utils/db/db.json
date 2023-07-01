@@ -1,8 +1,11 @@
 {
   "a": "1",
-  "": {
-    "a": {
-      "b": "1"
-    }
-  }
+  "llama-install": "CMAKE_ARGS=\"-DLLAMA_CUBLAS=on\" FORCE_CMAKE=1 pip install llama-cpp-python --no-cache-dir",
+  "x": "a a",
+  "xx": "1",
+  "xa": {
+    "x": "1"
+  },
+  "y": "hi ss",
+  "lll": "1 2sd "
 }

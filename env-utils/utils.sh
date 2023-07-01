@@ -9,7 +9,8 @@ conadac() {
     done
 }
 
-function activate_venv() {
+# function activate_venv() {
+function utils::activate_venv() {
     currentDepth=$(pwd | tr -cd '/' | wc -c)
     minDiff=999999 # Initialize with a large value
     minPath=""
@@ -38,6 +39,7 @@ function activate_venv() {
     fi
 }
 
+alias activate_venv='utils::activate_venv '
 alias actv='activate_venv '
 alias cac='conda activate '
 

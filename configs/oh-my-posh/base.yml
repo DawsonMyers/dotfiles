@@ -24,7 +24,8 @@ blocks:
             background: p:orange
             template: '  {{ path .Path .Location }} '
             properties:
-                style: folder
+                # style: folder
+                style: powerlevel
           - type: git
             style: powerline
             powerline_symbol: ''
@@ -71,6 +72,7 @@ blocks:
       trailing_diamond: ''
       foreground: p:white
       background: p:orange
+      min_width: 70
       segments:
           - type: node
             style: plain
@@ -103,7 +105,7 @@ blocks:
                 always_enabled: true
           - type: shell
             style: powerline
-            foreground: p:white
+            foreground: p:orange
             background: transparent
             leading_diamond: ''
             trailing_diamond: ''

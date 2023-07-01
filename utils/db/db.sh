@@ -18,13 +18,13 @@ utils_db_file="${repo_dir}/db.json"
 
 alias dbdump="cat $repo_dir"
 alias echo_opts='eval "[[ $1 == -n && -n $2 ]] && shift && opts=-n"'
-log_blue() { echo "${BLUE}$*${NC}"; }
-log_yellow() { echo "${YELLOW}$*${NC}"; }
-log_red() { echo "${RED}$*${NC}"; }
-log_green() { echo "${GREEN}$*${NC}"; }
-log_cyan() { echo "${CYAN}$*${NC}"; }
-log_pink() { echo "${PINK}$*${NC}"; }
-# log_blue() { echo "${BLUE}$*${NC}"; }
+log_blue() { echo -e "${BLUE}$*${NC}"; }
+log_yellow() { echo -e "${YELLOW}$*${NC}"; }
+log_red() { echo -e "${RED}$*${NC}"; }
+log_green() { echo -e "${GREEN}$*${NC}"; }
+log_cyan() { echo -e "${CYAN}$*${NC}"; }
+log_pink() { echo -e "${PINK}$*${NC}"; }
+# log_blue() { echo -e "${BLUE}$*${NC}"; }
 
 # Colored logging functions
 log() {
@@ -71,12 +71,16 @@ _db-set() {
         return 1
     fi
     local json="$(cat "$utils_db_file")"
-    log_debug "json:\n $json"
+    
+    # log_debug "json: $json"
+    
     local updated_json="$(_jq_set_value "$key" "$value" "$json")"
-    log_debug "updated_json:\n$updated_json"
+    # log_debug "updated_json:\n$updated_json"
 
     [[ -z $updated_json ]] && log_error "jq didn't return any json" && return 1
-    echo "$updated_json" > $utils_db_file && log "Set $key = $value" || log_error "Failed to write json to file."
+    echo "$updated_json" > $utils_db_file && 
+        log "$key = $value" || 
+        log_error "Failed to write json to file."
     # local json_path=".${key//./.}"
     # echo jq "$json_path = \"$value\"" "$utils_db_file" > tmp.json && mv tmp.json "$utils_db_file"
     # jq "$json_path = \"$value\"" "$utils_db_file" > tmp.json && mv tmp.json "$utils_db_file"
@@ -97,34 +101,59 @@ _jq_set_value() {
 
     local key="$1"
     local value="$2"
-    local json="$3"
-    [[ -z $json ]] && json='{}'
-
+    local json="${3:-'{}'}"
+    # [[ -z $json ]] && json='{}'
+    local arg_type='arg'
+    $value_is_json && arg_type='argjson'
     local val_args=(--arg val "$value")
-    $value_is_json && val_args[0]='--argjson'
+    # $value_is_json && val_args[0]='--argjson'
 
-    log_debug echo "$json" | jq --arg key_path "$key" "${val_args[@]}" '. | setpath(($key_path |  split(".")); $val)'
+    local query=".$key = \$val"
+    # local args=("${val_args[@]}" "$query")
+    # args+=(".$key =" '$val')
+    # log_debug "echo \"$json\" | jq --arg key_path \"$key\" \"${val_args[@]}\" '. | setpath(($key_path |  split(\".\")); $val)'"
+    # log_debug <<<-EOS
 
-    local updated_json="$(echo "$json" | jq --arg key_path "$key" "${val_args[@]}" '. | setpath(($key_path |  split(".")); $val)')"
+
+    local updated_json="$(
+        # echo "$json" | 
+            jq "${val_args[@]}" "$query" <<<"$json"
+        )"
+    # local updated_json="$(
+    #     echo "$json" | 
+    #         jq --arg key_path "$key" "$val_args[@]}" \
+    #             '. | setpath(($key_path |  split(".")); $val)'
+    #     )"
     echo "$updated_json"
+}
+
+json_str_escape() {
+    jq -n --arg str "$*" '$str | @json'
 }
 
 # get operation
 _db-get() {
     local key="$1"
+    local raw=true
+    # [[ $1 =~ --raw ]] && raw=true && shift
 
     check_jq_installed || return 1
     ensure_db_exists
 
     if [ -z "$key" ]; then
         log_warn "No key supplied"
-        jq -r "$json_path" "$utils_db_file"
+        jq -r "." "$utils_db_file"
         return
     fi
-    local json_path=".${key//./.}"
+
+    # -r outputs raw values instead of json strings
     local value
-    value=$(jq -r "$json_path" "$utils_db_file")
-    log_blue "Get $key = $value"
+    value=$(jq -r ". | .$key" "$utils_db_file") ||
+        log_error "Failed to get json"
+    # local json_path=".${key//./.}"
+    # value=$(jq -r "$json_path" "$utils_db_file")
+    # $raw && echo "$value"|| log_blue "$value"
+    echo "$value"
 }
 
 # list operation
