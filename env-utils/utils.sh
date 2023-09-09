@@ -61,6 +61,13 @@ e() {
     fi
 }
 
+
+
+
+
+
+
+
 # Prints out a clickable hyperlink without actually printing the URL.
 # https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
 hyperlink() {
@@ -70,3 +77,11 @@ hyperlink() {
 }
 
 # echo utils.sh loaded
+
+
+timestamp() {
+    [[ $1 == *-h* ]] && echo '~dotfiles/env-utils/utils.sh'
+    date +"%Y-%m-%d_%H-%M-%S"
+}
+
+alias pingg='ping google.com'

@@ -60,6 +60,20 @@ ensure_db_exists() {
 
 # set operation
 _db-set() {
+    local category='default'
+
+    local OPTIND
+    while getopts ":j:c" opt; do
+        case "${opt}" in
+            j) value_is_json=true ;;
+            c) category="$OPTARG" ;;
+            : ) log_error "Option '${OPTARG}' expects an argument."; return 1 ;;
+            \? ) log_error "Invalid option: '${OPTARG}'"; return 1 ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    : ${category=default}
     local key="$1"
     local value="$2"
 
@@ -73,8 +87,8 @@ _db-set() {
     local json="$(cat "$utils_db_file")"
     
     # log_debug "json: $json"
-    
-    local updated_json="$(_jq_set_value "$key" "$value" "$json")"
+    local categorized_key="$category.$key"
+    local updated_json="$(_jq_set_value "$categorized_key" "$value" "$json")"
     # log_debug "updated_json:\n$updated_json"
 
     [[ -z $updated_json ]] && log_error "jq didn't return any json" && return 1
@@ -89,10 +103,12 @@ _db-set() {
 
 _jq_set_value() {
     local value_is_json=false
+    local category=''
     local OPTIND
-    while getopts ":j" opt; do
+    while getopts ":j:c" opt; do
         case "${opt}" in
             j) value_is_json=true ;;
+            c) category="$OPTARG" ;;
             : ) log_error "Option '${OPTARG}' expects an argument."; return 1 ;;
             \? ) log_error "Invalid option: '${OPTARG}'"; return 1 ;;
         esac
@@ -107,7 +123,8 @@ _jq_set_value() {
     $value_is_json && arg_type='argjson'
     local val_args=(--arg val "$value")
     # $value_is_json && val_args[0]='--argjson'
-
+    [[ -n $category ]] && key="$category.$key"
+    # local categorized_key="$category.$key"
     local query=".$key = \$val"
     # local args=("${val_args[@]}" "$query")
     # args+=(".$key =" '$val')
@@ -135,10 +152,22 @@ json_str_escape() {
 _db-get() {
     local key="$1"
     local raw=true
+    local category='default'
     # [[ $1 =~ --raw ]] && raw=true && shift
 
     check_jq_installed || return 1
     ensure_db_exists
+
+    local OPTIND
+    while getopts ":j:c" opt; do
+        case "${opt}" in
+            j) value_is_json=true ;;
+            c) category="$OPTARG" ;;
+            : ) log_error "Option '${OPTARG}' expects an argument."; return 1 ;;
+            \? ) log_error "Invalid option: '${OPTARG}'"; return 1 ;;
+        esac
+    done
+    shift $((OPTIND - 1))
 
     if [ -z "$key" ]; then
         log_warn "No key supplied"
@@ -148,7 +177,8 @@ _db-get() {
 
     # -r outputs raw values instead of json strings
     local value
-    value=$(jq -r ". | .$key" "$utils_db_file") ||
+    local categorized_key="$category.$key"
+    value=$(jq -r ". | .$categorized_key" "$utils_db_file") ||
         log_error "Failed to get json"
     # local json_path=".${key//./.}"
     # value=$(jq -r "$json_path" "$utils_db_file")
@@ -159,10 +189,22 @@ _db-get() {
 # list operation
 _db-list() {
     local is_tabular="$1"
+    local category='default'
 
     check_jq_installed || return 1
     ensure_db_exists
+    local OPTIND
+    while getopts ":j:c" opt; do
+        case "${opt}" in
+            j) value_is_json=true ;;
+            c) category="$OPTARG" ;;
+            : ) log_error "Option '${OPTARG}' expects an argument."; return 1 ;;
+            \? ) log_error "Invalid option: '${OPTARG}'"; return 1 ;;
+        esac
+    done
+    shift $((OPTIND - 1))
 
+    local categorized_key="$category.$key"
     if [ "$is_tabular" == "-t" ]; then
         jq -r 'to_entries[] | "\(.key) \(.value)"' "$utils_db_file" | column -t -s ' ' -o ' | '
     else
@@ -192,19 +234,19 @@ db() {
 
     case "$command" in
         set)
-            _db-set "$key" "$value"
+            _db-set "${@:2}"
             ;;
         get)
-            _db-get "$key"
+            _db-get "${@:2}"
             ;;
         ls|list)
-            _db-list "$key"
+            _db-list "${@:2}"
             ;;
         -h|--help)
-            _db-help
+            _db-help "${@:2}"
             ;;
         i|install)
-            _db-install
+            _db-install "${@:2}"
             ;;
         *)
             log_error "Invalid command: $command"

@@ -25,7 +25,10 @@ blocks:
             template: '  {{ path .Path .Location }} '
             properties:
                 # style: folder
-                style: powerlevel
+                # style: powerlevel
+                style: full
+                mapping:
+                  "~": home
           - type: git
             style: powerline
             powerline_symbol: ''
@@ -74,6 +77,9 @@ blocks:
       background: p:orange
       min_width: 70
       segments:
+          # - type: text
+          #   foreground: p:blue
+          #   template: (
           - type: node
             style: plain
             foreground: p:green
@@ -115,7 +121,10 @@ blocks:
             newline: true
             # foreground: p:white
             # background: transparent
-            template: '<p:blue><b>{{ .CurrentDate | date "15:04:05" }}</b></>]'
+            template: '<p:blue><b>{{ .CurrentDate | date .Format }}</b></><p:orange>]'
+            # template: '<p:blue><b>{{ .CurrentDate | date "15:04:05" }}</b></>]'
+            properties:
+              time_format: Jan 2 15:04:05
     # - type: prompt
     #   newline: true
     #   alignment: left
