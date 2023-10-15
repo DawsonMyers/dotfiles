@@ -61,6 +61,12 @@ e() {
     fi
 }
 
+try_link() {
+    local target=$1
+    local pointer=$2
+    [[ -f $pointer ]] && return
+    ln -sv "$target" "$pointer"
+}
 
 
 
@@ -80,8 +86,11 @@ hyperlink() {
 
 
 timestamp() {
-    [[ $1 == *-h* ]] && echo '~dotfiles/env-utils/utils.sh'
+    [[ $1 == *-h* ]] && echo '~/dotfiles/env-utils/utils.sh'
     date +"%Y-%m-%d_%H-%M-%S"
 }
 
 alias pingg='ping google.com'
+
+# Re-runs a command forever.
+rerun() { while true; do $@ && echo DONE || echo ERROR; echo 'Restarting in 3...'; sleep 3; done }

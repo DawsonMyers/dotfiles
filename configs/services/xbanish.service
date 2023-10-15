@@ -1,0 +1,20 @@
+[Unit]
+Description=Run xbanish to hide cursor while typing
+#After=graphical.target
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/xbanish
+Restart=always
+ExecStartPre=/bin/sleep 5
+RestartSec=30
+
+[Install]
+WantedBy=default.target
+#WantedBy=multi-user.target
+
+
+
+
+

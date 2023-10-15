@@ -22,6 +22,7 @@ log_warn() {
 log_err() {
   echo -e "${ALI_RED}ERROR:${ALI_NC} $1"
 }
+alias log_error=log_err
 
 log_verb() {
   echo -e "${ALI_CYAN}VERB:${ALI_NC} $1"
@@ -51,7 +52,7 @@ aliaser() {
       if jq -e ".$2" "$ALI_HOME"/aliases.json >/dev/null; then
         log_warn "Alias '$2' already exists. It will be overwritten."
       fi
-      { jq ". + {\"$2\": \"$3\"}" "$ALI_HOME"/aliases.json > temp.json &&
+      jq ". + {\"$2\": \"$3\"}" "$ALI_HOME"/aliases.json > temp.json &&
            mv temp.json "$ALI_HOME"/aliases.json } \
           && log_info "Alias '$2' created for command '$3'."
       reload_aliases
