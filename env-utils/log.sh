@@ -15,10 +15,10 @@ log_info() {
 log_warn() {
     echo -e "${DF_YELLOW}WARN:${DF_NC} $1"
 }
-log_err() {
+log_error() {
     echo -e "${DF_RED}ERROR:${DF_NC} $1"
 }
-alias log_error=log_err
+alias log_err=log_error
 log_verb() {
     echo -e "${DF_CYAN}VERB:${DF_NC} $1"
 }
