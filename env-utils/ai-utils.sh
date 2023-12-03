@@ -8,6 +8,9 @@ alias cdoob="cd $OOB"
 alias cdsd="cd $SD"
 alias cdmodels="cd $AI_MODELS"
 
+# LD_LIBRARY_PATH="/usr/local/cuda-12.3/lib64:$LD_LIBRARY_PATH"
+# PATH="/usr/local/cuda-12.3/lib64:$PATH"
+
 add-ai-model() {
     mv "$1" $AI/models/
 }
@@ -69,7 +72,7 @@ ooba-start() {
     eval . $OOB/start.sh -d "$@"
 }
 unalias ostart 2> /dev/null
-ostart() { oacn && . $OOB/start.sh ; }
+ostart() { oacn && . $OOB/start.sh "$@"; }
 # function ostart() {
 #     local env_name
 #     [[ $1 =~ -e|--env|-n ]] && env_name="$2" && shift 2
@@ -88,6 +91,14 @@ sdstart() {
     conda activate sd 
     cd $SD_HOME 
     vactivate 
-    ./webui.sh $([[ $1 != '-' ]] && echo --autolaunch || shift) --api "$@"
-    
+    local autolaunch=--autolaunch
+    [[ $1 == - ]] && shift && autolaunch=
+    ./webui.sh --port 7860 $autolaunch --api "$@"
     }
+
+case $1 in
+    o) ostart "$@" ;;
+    sd) sdstart "$@" ;;
+    stx) stxstart "$@" ;;
+    st) ststart "$@" ;;
+esac

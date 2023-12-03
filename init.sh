@@ -24,5 +24,5 @@ function source_dir() {
 
 source_dir $DOTFILES_DIR/configs
 source_dir $DOTFILES_DIR/env-utils
-source_dir $DOTFILES_DIR/env-utils
+# source_dir $DOTFILES_DIR/env-utils
 
