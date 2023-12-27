@@ -1,0 +1,137 @@
+#!/bin/bash
+#######################################################
+
+# Load logger
+. ~/dotfiles/env-utils/log.sh
+
+# Append alias to .bashrc
+aa() {
+	[[ -n $(grep "$*" ~/.bashrc) ]] && echo alias already exists && return 1
+	local cmd="alias \"$1\"=\"${@:2}\""
+    echo "$cmd >> ~/.bashrc"
+	echo "$cmd" >> ~/.bashrc
+}
+# Append to .bashrc
+abrc() {
+	echo echo "$*" >> ~/.bashrc
+	echo "$*" >> ~/.bashrc
+}
+mk() {
+    mkdir -p "$*" && cd $_
+}
+
+alias mkex='chmod +x '
+
+
+export HISTTIMEFORMAT="%F %T "
+export HISTFILESIZE=20000
+export HISTSIZE=20000
+export HISTCONTROL=$HISTCONTROL:ignoredups
+# Store cmds to history  as they are entered
+shopt -s histappend 
+
+# Allows for typing the start of a command, for example gcloud then using the up and down arrows to cycle through your history for matching commands
+# bind '"\e[A": history-search-backward'
+# bind '"\e[A": history-search-backward'
+# bind '"\e[B": history-search-forward'
+
+
+# use 'showkey -a' command to find out what the keycodes are
+# ctrl+up = \e[1;5A
+# ctrl+down = \e[1;5B
+# ctrl+right = \e[1;5C
+# ctrl+left = \e[1;5D
+
+# Only load in an interactive terminal.
+if [[ $- =~ i ]]; then
+    bind '"\e[1;5A":history-search-backward'
+    bind '"\e[1;5B":history-search-forward'
+    bind '"\e[1;5C":forward-word'
+    bind '"\e[1;5D":backward-word'
+fi
+
+
+# Enable Starship
+# eval "$(starship init bash)"
+
+export EDITOR='code -nw '
+
+disk_analyzer() {
+    sudo baobab
+}
+
+
+resize_swap() {
+    set -e
+    local swapsize_gb=$1
+    sudo swapoff -a
+    [[ -f /swapfile ]] && sudo sudo rm /swapfile
+    sudo fallocate -l ${swapsize_gb}G /swapfile
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+    sudo swapon /swapfile
+    set +e
+}
+
+vactivate() {
+    if [[ -d ./venv || -d ../venv ]]; then
+        [[ -d ./venv ]] && envpath=./venv
+        [[ -d ../venv ]] && envpath=../venv
+        local activate_venv=$envpath/bin/activate
+        . $envpath/bin/activate && echo "venv activated at $activate_venv"
+        return
+    fi
+    echo "ERROR: venv dir not found" >&2
+}
+alias vac=vactivate
+alias venv=vactivate
+
+
+# Implicit cd
+shopt -s autocd
+# Correct minor errors in the spelling of a directory
+shopt -s cdspell
+shopt -s dirspell
+# Activate recursive globbing
+shopt -s globstar
+# if [ -f ~/bin/sensible.bash ]; then
+#    source ~/bin/sensible.bash
+# fi
+# echo opts=====$-
+# mkdir -p ~/.bash_completion
+
+# if [[ -d ~/.bash_completion ]]; then
+# echo ALLL==== "$HOME/.bash_completion"/*
+# 	for file in "$HOME/.bash_completion"/*.sh; do
+#         echo "file: $file"
+# 	    source "$file"
+# 	done
+# fi
+
+
+# Don't put duplicate lines or lines starting with space in the history
+HISTCONTROL="erasedups:ignoreboth"
+# Commands that don't need to get recorded
+# export HISTIGNORE="&:[ ]*:exit:ls:bg:fg:history"
+# Save multi-line commands to the history as one command
+shopt -s cmdhist
+# Append to the history file, don't overwrite it
+shopt -s histappend
+# Set history size to a very large number
+HISTSIZE=500000
+HISTFILESIZE=400000
+
+
+function prompt_cmd_add () {
+    local cmd="$1"
+    [[ -z $cmd || $PROMPT_COMMAND =~ $cmd ]] && return;
+    # Checks if it ends with a semicolon.
+    [[ ! $PROMPT_COMMAND =~ [[:space:]]*\;[[:space:]]*$ ]] && PROMPT_COMMAND+=';'
+    PROMPT_COMMAND+="$cmd"    
+}
+
+# Record each line of history right away
+# instead of at the end of the session
+[[ ! $PROMPT_COMMAND =~ "history -a" ]] && PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND} history -a;"
+# Set history timestamp format
+# HISTTIMEFORMAT='%F %T

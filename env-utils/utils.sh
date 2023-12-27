@@ -8,8 +8,7 @@ conadac() {
     echo COND = $f
     done
 }
-
-# function activate_venv() {
+# Activates the first venv or conda env found in the current directory or any child directory, in a depth first manner.
 function utils::activate_venv() {
     currentDepth=$(pwd | tr -cd '/' | wc -c)
     minDiff=999999 # Initialize with a large value
@@ -67,12 +66,6 @@ try_link() {
     [[ -f $pointer ]] && return
     ln -sv "$target" "$pointer"
 }
-
-
-
-
-
-
 
 # Prints out a clickable hyperlink without actually printing the URL.
 # https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
