@@ -1,5 +1,6 @@
 export AI=/home/dawson/code/projects/ai
-export OOB=$AI/oobabooga/oobabooga_linux
+export OOB=$AI/oobabooga/textgen-dec23
+# export OOB=$AI/oobabooga/oobabooga_linux
 export SD=$AI/stable-diffusion/stable-diffusion-webui-aug
 export AI_MODELS=$AI/models
 

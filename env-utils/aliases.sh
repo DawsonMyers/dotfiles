@@ -16,13 +16,14 @@ alias geu='gnome-extensions uninstall '
 alias src='. ~/.bashrc'
 alias ebrc='nano ~/.bashrc'
 alias gnome-reset='dconf reset -f /org/gnome/'
-
+alias edi='code $HOME'
+alias edai='code $AI'
 alias omp=oh-my-posh
 
 alias aptupd='sudo apt update'
 alias aptupg='sudo apt upgrade'
 alias apti='sudo apt install '
-
+alias aup='sudo apt update && sudo apt upgrade'
 # export AI=/home/dawson/code/projects/ai
 # export OOB=$AI/oobabooga/oobabooga_linux
 # export SD=$AI/stable-diffusion/stable-diffusion-webui-aug
