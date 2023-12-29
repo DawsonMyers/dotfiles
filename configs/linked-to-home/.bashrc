@@ -133,26 +133,9 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 
-source ~/.autoenv/activate.sh
+#source ~/.autoenv/activate.sh
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/dawson/.local/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/dawson/.local/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/dawson/.local/anaconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/dawson/.local/anaconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-
 
 __update_term_title_after_cmd() {
     local dir="$PWD"
@@ -184,8 +167,8 @@ source '/home/dawson/dotfiles/utils/db/db.sh'
 . /home/dawson/dotfiles/configs/oh-my-posh/.oh-my-posh-init.sh
 
 source ~/.environment
-export PATH=/usr/local/cuda-11.8/bin:$PATH
-export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH
+# export PATH=/usr/local/cuda-11.8/bin:$PATH
+# export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH
 
 
 # echo "[TRACE] ${BASH_SOURCE##*/} END"
@@ -195,4 +178,21 @@ export PATH="/snap/bin:$PATH"
 
 export DOCKER_HOST=unix:///run/user/1000/docker.sock
 export PATH=/usr/bin:$PATH
+
+
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/dawson/.local/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/dawson/.local/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/dawson/.local/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/dawson/.local/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
 

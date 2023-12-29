@@ -18,11 +18,13 @@ add-ai-model() {
 
 link_models() {
     [[ $1 =~ sd ]] && echo linking SD models &&
-      ln -sv $AI/models/ \
+      ln -sv $AI/models \
         stable-diffusion $AI/stable-diffusion/stable-diffusion-webui-aug/models &&
         return
     echo linking Oobabooga models
-    ln -sv $AI/models $AI/oobabooga/oobabooga_linux/text-generation-webui/models
+    ln -sv $AI/models $OOB/
+    ln -sv $AI/models/.characters $OOB/characters
+    # ln -sv $AI/models $AI/oobabooga/oobabooga_linux/text-generation-webui/models
 }
 
 cuda_test() {
@@ -64,7 +66,7 @@ oac() { . $OOB/installer_files/conda/bin/activate; }
 
 unalias oacn 2> /dev/null
 oacn() {
-    conda activate "${1:-textgen-new}"
+    conda activate "${1:-tg}"
 }
 
 ooba-start() { 
@@ -89,9 +91,9 @@ cdsd() { cd $SD_HOME; }
 
 unalias sdstart 2> /dev/null
 sdstart() { 
-    conda activate sd 
     cd $SD_HOME 
-    vactivate 
+    conda activate sd 
+    # vactivate 
     local autolaunch=--autolaunch
     [[ $1 == - ]] && shift && autolaunch=
     ./webui.sh --port 7860 $autolaunch --api "$@"
