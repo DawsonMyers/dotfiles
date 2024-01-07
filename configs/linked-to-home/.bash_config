@@ -13,7 +13,8 @@ aa() {
 }
 # Append to .bashrc
 abrc() {
-	echo echo "$*" >> ~/.bashrc
+    [[ -n $(grep "$*" ~/.bashrc) ]] && echo already exists in .bashrc && return 1
+	echo "echo \"$*\" >> ~/.bashrc"
 	echo "$*" >> ~/.bashrc
 }
 mk() {

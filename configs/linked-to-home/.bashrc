@@ -12,7 +12,8 @@ case $- in
       *) return;;
 esac
 
-. ~/environment
+# . ~/environment
+
 cuda_bin=/usr/local/cuda/bin
 [[ -d $cuda_bin && ! $PATH =~ $cuda_bin ]] && PATH+="$cuda_bin"
 
@@ -143,13 +144,13 @@ __update_term_title_after_cmd() {
     echo -ne "\033]0;${PWD}\007"
 }
 
-if [[ ! $PROMPT_COMMAND =~ __update_term_title_after_cmd ]]; then
-    PROMPT_COMMAND="__update_term_title_after_cmd; $PROMPT_COMMAND"
-fi
+# if [[ ! $PROMPT_COMMAND =~ __update_term_title_after_cmd ]]; then
+#     PROMPT_COMMAND="__update_term_title_after_cmd; $PROMPT_COMMAND"
+# fi
 
 . ~/dotfiles/init.sh
 # Start of aliaser init code
-source ~/.local/share/aliaser/aliaser.sh
+# source ~/.local/share/aliaser/aliaser.sh
 # End of aliaser init code
 
 # pip bash completion start
@@ -162,9 +163,9 @@ _pip_completion()
 complete -o default -F _pip_completion /home/dawson/.local/anaconda3/bin/python -m pip
 # pip bash completion end
 
-source '/home/dawson/dotfiles/utils/db/db.sh'
+# source '/home/dawson/dotfiles/utils/db/db.sh'
 
-. /home/dawson/dotfiles/configs/oh-my-posh/.oh-my-posh-init.sh
+# . /home/dawson/dotfiles/configs/oh-my-posh/.oh-my-posh-init.sh
 
 source ~/.environment
 # export PATH=/usr/local/cuda-11.8/bin:$PATH
@@ -180,17 +181,19 @@ export DOCKER_HOST=unix:///run/user/1000/docker.sock
 export PATH=/usr/bin:$PATH
 
 
+. ~/.bashrc.omb
+
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/dawson/.local/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+__conda_setup="$('/home/dawson/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/home/dawson/.local/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/dawson/.local/anaconda3/etc/profile.d/conda.sh"
+    if [ -f "/home/dawson/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/dawson/anaconda3/etc/profile.d/conda.sh"
     else
-        export PATH="/home/dawson/.local/anaconda3/bin:$PATH"
+        export PATH="/home/dawson/anaconda3/bin:$PATH"
     fi
 fi
 unset __conda_setup

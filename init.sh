@@ -1,3 +1,4 @@
+#!/bin/bash
 alias cur_file_path='"$(dirname $(realpath $BASH_SOURCE))"'
 
 export DOTFILES_DIR="$(dirname $(realpath $BASH_SOURCE))"
@@ -8,7 +9,7 @@ shopt -s dotglob;
 #     . "$file"
 # done
 
-! $(log_info &> /dev/null) && . ~/dotfiles/env-utils/log.sh
+! $(log_info &> /dev/null) && . "$DOTFILES_DIR/env-utils/log.sh"
 
 function source_dir() {
     local file 
@@ -22,7 +23,7 @@ function source_dir() {
     done
 }
 
-source_dir --init-only $DOTFILES_DIR/configs
+# source_dir --init-only $DOTFILES_DIR/configs
 source_dir $DOTFILES_DIR/env-utils
 # source_dir $DOTFILES_DIR/env-utils
 
