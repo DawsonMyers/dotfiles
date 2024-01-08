@@ -83,25 +83,25 @@ eval $(oh-my-posh init bash --config $POSH_CONFIG)
 # eval $(oh-my-posh init bash --config "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/$POSH_CONFIG.omp.json")
 
 
-# function _set_posh_cursor_position() {
-#       # not supported in Midnight Commander
-#     # see https://github.com/JanDeDobbeleer/oh-my-posh/issues/3415
-#     # if [[ "false" != "true" ]] || [[ -v MC_SID ]]; then
-#     #     return
-#     # fi
+function _set_posh_cursor_position() {
+      # not supported in Midnight Commander
+    # see https://github.com/JanDeDobbeleer/oh-my-posh/issues/3415
+    # if [[ "false" != "true" ]] || [[ -v MC_SID ]]; then
+    #     return
+    # fi
 
-#     local oldstty=$(stty -g)
-#     stty raw -echo min 0
+    local oldstty=$(stty -g)
+    stty raw -echo min 0
 
-#     local COL
-#     local ROW
-#     IFS=';' read -sdR -p $'\E[6n' ROW COL
+    local COL
+    local ROW
+    IFS=';' read -sdR -p $'\E[6n' ROW COL
 
-#     stty $oldstty
+    stty $oldstty
 
-#     export POSH_CURSOR_LINE=${ROW#*[}
-#     export POSH_CURSOR_COLUMN=${COL}
-# }
+    export POSH_CURSOR_LINE=${ROW#*[}
+    export POSH_CURSOR_COLUMN=${COL}
+}
 
 # function _omp_start_timer() {
 #     /usr/local/bin/oh-my-posh get millis

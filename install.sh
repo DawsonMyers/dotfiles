@@ -19,3 +19,8 @@ shopt -u dotglob # disable dotglob
 
 
 gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'previews'
+
+# Install fonts
+for i in firacode firamono geistmono hack intelonemono JetBrainsMono Meslo sourcecodepro nerdFontsSymbolsOnly ubuntu ubuntumono; do
+    oh-my-posh font install $i
+done

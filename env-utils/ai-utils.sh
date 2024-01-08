@@ -1,5 +1,5 @@
 export AI=/home/dawson/code/projects/ai
-export OOB=$AI/oobabooga/textgen-dec23
+export OOB=$AI/oobabooga/text-generation-webui
 # export OOB=$AI/oobabooga/oobabooga_linux
 export SD=$AI/stable-diffusion/stable-diffusion-webui-aug
 export AI_MODELS=$AI/models
@@ -7,7 +7,7 @@ export AI_MODELS=$AI/models
 alias cdai="cd $AI"
 alias cdoob="cd $OOB"
 alias cdsd="cd $SD"
-alias cdmodels="cd $AI_MODELS"
+alias cdm{mo,mod,odels}="cd $AI_MODELS"
 
 # LD_LIBRARY_PATH="/usr/local/cuda-12.3/lib64:$LD_LIBRARY_PATH"
 # PATH="/usr/local/cuda-12.3/lib64:$PATH"
@@ -31,7 +31,7 @@ cuda_test() {
     echo 'CUDA available: ' 
     python -c 'import torch; print(torch.cuda.is_available())'
     echo
-    echo "(Ran from ~/dotfiles/env-utils/utils.sh)"
+    echo "(Ran from $DOTFILES_DIR/env-utils/utils.sh)"
 }
 alias ct=cuda_test
 
@@ -75,7 +75,7 @@ ooba-start() {
     eval . $OOB/start.sh -d "$@"
 }
 unalias ostart 2> /dev/null
-ostart() { oacn && . $OOB/start.sh "$@"; }
+ostart() { oacn && bash $OOB/start.sh "$@"; }
 # function ostart() {
 #     local env_name
 #     [[ $1 =~ -e|--env|-n ]] && env_name="$2" && shift 2

@@ -126,8 +126,9 @@ if ! shopt -oq posix; then
 fi
 
 
-
 . ~/.bash_config
+. ~/.aliases
+
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -181,7 +182,7 @@ export DOCKER_HOST=unix:///run/user/1000/docker.sock
 export PATH=/usr/bin:$PATH
 
 
-. ~/.bashrc.omb
+# . ~/.bashrc.omb
 
 
 # >>> conda initialize >>>
@@ -199,3 +200,6 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+. "$DOTFILES_DIR/configs/oh-my-posh/.oh-my-posh-init.sh"
+
+eval "$(oh-my-posh init bash --config $POSH_CONFIG)"
