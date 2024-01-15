@@ -86,4 +86,4 @@ timestamp() {
 alias pingg='ping google.com'
 
 # Re-runs a command forever.
-rerun() { while true; do $@ && echo DONE || echo ERROR; echo 'Restarting in 3...'; sleep 3; done }
+rerun() { while true; do "$@" && echo DONE || echo ERROR; echo 'Restarting in 3...'; sleep 3; done }

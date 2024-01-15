@@ -60,7 +60,7 @@ alias vcpkg='/home/dawson/code/projects/ai/vcpkg/vcpkg '
 # Phone
 alias cdsam='cd /run/user/1000/gvfs/mtp:host=SAMSUNG_SAMSUNG_Android_R58M3182R6F'
 
-n=nautilus
+alias n=nautilus
 
 
 # ##########################

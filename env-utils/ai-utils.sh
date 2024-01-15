@@ -12,6 +12,37 @@ alias cdm{mo,mod,odels}="cd $AI_MODELS"
 # LD_LIBRARY_PATH="/usr/local/cuda-12.3/lib64:$LD_LIBRARY_PATH"
 # PATH="/usr/local/cuda-12.3/lib64:$PATH"
 
+retry() {
+    local n=5
+    local max=5
+    local delay=1m
+
+    if [[ $1 =~ -f|--forever ]]; then
+        while true; do
+            "$@" && log_green "retry(ai-utils.sh): command ran successfully" || log_error "retry(ai-utils.sh): command returned non-zero exit code" 
+            log_green "retry(ai-utils.sh): Retry #$n"
+            log_info "retry(ai-utils.sh): waiting $delay before next attempt..."
+            sleep $delay;
+        done
+        return
+    fi
+
+    while true; do        
+        "$@" && break || {
+            if [[ $n -lt $max ]]; then
+                ((n++))
+                echo "Command failed. Attempt $n/$max:"
+
+            log_green "retry(ai-utils.sh): Retry #$n starting in $delay..."
+                sleep $delay;
+            else
+                log_error "The command has failed after $n attempts." >&2
+                return 1
+            fi
+        }
+    done
+}
+
 add-ai-model() {
     mv "$1" $AI/models/
 }
@@ -55,27 +86,38 @@ stxstart() {
     ./start.sh "$@"; 
 }
 
-ststart() { conda activate stx && cd $AI/SillyTavern && ./start.sh "$@"; }
+ststart() { conda activate stx && cd $AI/SillyTavern/SillyTavern && ./start.sh "$@"; }
 oconda() { $OOB/installer_files/conda/bin/conda "$@"; }
 unalias oac 2> /dev/null
-oac() { . $OOB/installer_files/conda/bin/activate; }
+oac() { 
+    # . $OOB/installer_files/conda/bin/activate;
+    conda activate tg
+     }
 
 # alias oacn="conda activate textgen-new"
 # alias oac=". $OOB/installer_files/conda/bin/activate"
 
-
+pipifix() {
+    pip install -r requirements.txt --upgrade-strategy=only-if-needed
+}
 unalias oacn 2> /dev/null
 oacn() {
     conda activate "${1:-tg}"
 }
 
 ooba-start() { 
-    cd $OOB
+    cd "$OOB"
     conda activate textgen-new
-    eval . $OOB/start.sh -d "$@"
+    eval . "$OOB"/start.sh -d "$@"
 }
 unalias ostart 2> /dev/null
-ostart() { oacn && bash $OOB/start.sh "$@"; }
+ostart() { 
+    cd $OOB
+    conda activate tg
+    [[ $1 == ---fix-deps ]] && pip install -r requirements.txt --upgrade-strategy=only-if-needed
+    retry bash $OOB/start.sh "$@"; 
+}
+    # oacn && bash $OOB/start.sh "$@"; }
 # function ostart() {
 #     local env_name
 #     [[ $1 =~ -e|--env|-n ]] && env_name="$2" && shift 2
@@ -92,11 +134,15 @@ cdsd() { cd $SD_HOME; }
 unalias sdstart 2> /dev/null
 sdstart() { 
     cd $SD_HOME 
-    conda activate sd 
+    conda activate sd || return 1
+    [[ $1 == ---fix-deps ]] && shift && pip install -r requirements.txt
+    local x_deepspeed= 
+    local deep_opt=
+    [[ $1 == -d ]] && x_deepspeed=deepspeed && deep_opt=--deepspeed && shift
     # vactivate 
     local autolaunch=--autolaunch
     [[ $1 == - ]] && shift && autolaunch=
-    ./webui.sh --port 7860 $autolaunch --api "$@"
+    $x_deepspeed ./webui.sh $deep_opt --port 7860 $autolaunch --api "$@"
     }
 
 case $1 in
