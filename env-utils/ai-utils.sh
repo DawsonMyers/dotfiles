@@ -2,12 +2,15 @@ export AI=/home/dawson/code/projects/ai
 export OOB=$AI/oobabooga/text-generation-webui
 # export OOB=$AI/oobabooga/oobabooga_linux
 export SD=$AI/stable-diffusion/stable-diffusion-webui-aug
+export ST=$AI/SillyTavern/SillyTavern
+export STX=$AI/SillyTavern/SillyTavern-extras
 export AI_MODELS=$AI/models
+export CONDA_PATH="$HOME/anaconda3"
 
 alias cdai="cd $AI"
 alias cdoob="cd $OOB"
 alias cdsd="cd $SD"
-alias cdm{mo,mod,odels}="cd $AI_MODELS"
+alias cd{mo,mod,odels}="cd $AI_MODELS"
 
 # LD_LIBRARY_PATH="/usr/local/cuda-12.3/lib64:$LD_LIBRARY_PATH"
 # PATH="/usr/local/cuda-12.3/lib64:$PATH"
@@ -15,9 +18,10 @@ alias cdm{mo,mod,odels}="cd $AI_MODELS"
 retry() {
     local n=5
     local max=5
-    local delay=1m
+    local delay=5s
 
     if [[ $1 =~ -f|--forever ]]; then
+        shift
         while true; do
             "$@" && log_green "retry(ai-utils.sh): command ran successfully" || log_error "retry(ai-utils.sh): command returned non-zero exit code" 
             log_green "retry(ai-utils.sh): Retry #$n"
@@ -28,18 +32,14 @@ retry() {
     fi
 
     while true; do        
-        "$@" && break || {
+        "$@" || {
             if [[ $n -lt $max ]]; then
                 ((n++))
                 echo "Command failed. Attempt $n/$max:"
-
-            log_green "retry(ai-utils.sh): Retry #$n starting in $delay..."
-                sleep $delay;
-            else
-                log_error "The command has failed after $n attempts." >&2
-                return 1
             fi
         }
+            log_green "retry(ai-utils.sh): Retry #$n starting in $delay..."
+            sleep $delay;
     done
 }
 
@@ -82,7 +82,7 @@ alias replay='aplay ~/test/tts/o.wav'
 # ststart() { cd $AI/SillyTavern && ./start.sh; }
 stxstart() { 
     conda activate stx 
-    cd $AI/SillyTavern-extras 
+    cd $AI/SillyTavern/SillyTavern-extras 
     ./start.sh "$@"; 
 }
 
@@ -115,7 +115,7 @@ ostart() {
     cd $OOB
     conda activate tg
     [[ $1 == ---fix-deps ]] && pip install -r requirements.txt --upgrade-strategy=only-if-needed
-    retry bash $OOB/start.sh "$@"; 
+    retry -f bash $OOB/start.sh "$@"; 
 }
     # oacn && bash $OOB/start.sh "$@"; }
 # function ostart() {
@@ -134,7 +134,7 @@ cdsd() { cd $SD_HOME; }
 unalias sdstart 2> /dev/null
 sdstart() { 
     cd $SD_HOME 
-    conda activate sd || return 1
+    conda activate sd || { log_error "failed to activate env sd"; return 1; }
     [[ $1 == ---fix-deps ]] && shift && pip install -r requirements.txt
     local x_deepspeed= 
     local deep_opt=
@@ -142,7 +142,7 @@ sdstart() {
     # vactivate 
     local autolaunch=--autolaunch
     [[ $1 == - ]] && shift && autolaunch=
-    $x_deepspeed ./webui.sh $deep_opt --port 7860 $autolaunch --api "$@"
+    $x_deepspeed ./webui.sh $deep_opt --port 7860 $autolaunch --api --listen --cors-allow-origins=* "$@"
     }
 
 case $1 in

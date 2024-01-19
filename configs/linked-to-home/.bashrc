@@ -175,7 +175,8 @@ source ~/.environment
 
 # echo "[TRACE] ${BASH_SOURCE##*/} END"
 
-export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:/usr/local/go/bin:/usr/local/cuda/bin
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+:}/usr/local/cuda/lib64
 export PATH="/snap/bin:$PATH"
 
 export DOCKER_HOST=unix:///run/user/1000/docker.sock
