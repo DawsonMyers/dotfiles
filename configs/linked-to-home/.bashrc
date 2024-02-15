@@ -131,7 +131,7 @@ fi
 
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm use 18 > /dev/null # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 
@@ -151,6 +151,7 @@ __update_term_title_after_cmd() {
 
 . ~/dotfiles/init.sh
 # Start of aliaser init code
+source ~/dotfiles/utils/aliaser/aliaser.sh
 # source ~/.local/share/aliaser/aliaser.sh
 # End of aliaser init code
 
@@ -170,12 +171,14 @@ complete -o default -F _pip_completion /home/dawson/.local/anaconda3/bin/python 
 
 source ~/.environment
 # export PATH=/usr/local/cuda-11.8/bin:$PATH
+# export PATH=/usr/local/cuda-11.8/bin:$PATH
 # export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH
 
 
 # echo "[TRACE] ${BASH_SOURCE##*/} END"
 
 export PATH=$PATH:/usr/local/go/bin:/usr/local/cuda/bin
+export PATH=$PATH:/home/.local/share/JetBrains/Toolbox/scripts:/home/.local/share/JetBrains/Toolbox/bin
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+:}/usr/local/cuda/lib64
 export PATH="/snap/bin:$PATH"
 
@@ -204,3 +207,11 @@ unset __conda_setup
 . "$DOTFILES_DIR/configs/oh-my-posh/.oh-my-posh-init.sh"
 
 eval "$(oh-my-posh init bash --config $POSH_CONFIG)"
+
+export DENO_INSTALL="/home/dawson/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH"
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/dawson/google-cloud-sdk/path.bash.inc' ]; then . '/home/dawson/google-cloud-sdk/path.bash.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/dawson/google-cloud-sdk/completion.bash.inc' ]; then . '/home/dawson/google-cloud-sdk/completion.bash.inc'; fi

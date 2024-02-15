@@ -1,5 +1,6 @@
 export AI=/home/dawson/code/projects/ai
 export OOB=$AI/oobabooga/text-generation-webui
+export OOB1=$AI/oobabooga/tg
 # export OOB=$AI/oobabooga/oobabooga_linux
 export SD=$AI/stable-diffusion/stable-diffusion-webui-aug
 export ST=$AI/SillyTavern/SillyTavern
@@ -114,9 +115,19 @@ unalias ostart 2> /dev/null
 ostart() { 
     cd $OOB
     conda activate tg
+    export CUDA_VISIBLE_DEVICES=1
     [[ $1 == ---fix-deps ]] && pip install -r requirements.txt --upgrade-strategy=only-if-needed
     retry -f bash $OOB/start.sh "$@"; 
 }
+
+ostart1() { 
+    cd $OOB
+    conda activate tg1
+    export CUDA_VISIBLE_DEVICES=1
+    [[ $1 == ---fix-deps ]] && pip install -r requirements.txt --upgrade-strategy=only-if-needed
+    retry -f bash $OOB/start.sh "$@"; 
+}
+
     # oacn && bash $OOB/start.sh "$@"; }
 # function ostart() {
 #     local env_name

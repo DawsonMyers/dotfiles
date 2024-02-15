@@ -87,3 +87,28 @@ alias pingg='ping google.com'
 
 # Re-runs a command forever.
 rerun() { while true; do "$@" && echo DONE || echo ERROR; echo 'Restarting in 3...'; sleep 3; done }
+
+# sed 's/:/\n/g' <(echo $PATH)
+alias @p="echo $PATH | sed 's/:/\n/g'" @path=@p
+
+split() {
+    local delim=' '
+    local str=''
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -d|--delim)
+                delim="$2"
+                shift 2
+                ;;
+            *)
+                echo "Invalid option: $1" >&2
+                shift
+                ;;
+        esac
+    done
+
+    str="$1"
+
+    echo "$str" | sed "s/$delim/\n/g"
+}
