@@ -13,6 +13,8 @@ alias cdoob="cd $OOB"
 alias cdsd="cd $SD"
 alias cd{mo,mod,odels}="cd $AI_MODELS"
 
+alias eai='code /home/dawson/dotfiles/env-utils/ai-utils.sh'
+
 # LD_LIBRARY_PATH="/usr/local/cuda-12.3/lib64:$LD_LIBRARY_PATH"
 # PATH="/usr/local/cuda-12.3/lib64:$PATH"
 
@@ -69,13 +71,13 @@ alias ct=cuda_test
 
 
 ttstart() {
-    conda activate stx
-    tts-server --model_name tts_models/en/vctk/vits
+    conda activate tts
+    tts-server --model_name tts_models/en/vctk/vits 
     # p316 is a girl. Try with this (in conda env stx):
     # tts --text 'fuck me' --model_name tts_models/en/vctk/vits --speaker_id p316  --out_path o.wav && aplay o.wav
 }
 ttsx() {
-    conda activate stx
+    conda activate tts
     tts --text "$1" --model_name ${2:-'tts_models/en/vctk/vits'} --speaker_id p316 --out_path ~/test/tts/o.wav && aplay ~/test/tts/o.wav
 }
 alias replay='aplay ~/test/tts/o.wav'
@@ -93,7 +95,7 @@ unalias oac 2> /dev/null
 oac() { 
     # . $OOB/installer_files/conda/bin/activate;
     conda activate tg
-     }
+}
 
 # alias oacn="conda activate textgen-new"
 # alias oac=". $OOB/installer_files/conda/bin/activate"
@@ -153,8 +155,15 @@ sdstart() {
     # vactivate 
     local autolaunch=--autolaunch
     [[ $1 == - ]] && shift && autolaunch=
-    $x_deepspeed ./webui.sh $deep_opt --port 7860 $autolaunch --api --listen --cors-allow-origins=* "$@"
-    }
+    $x_deepspeed ./webui.sh $deep_opt --port 7860 $autolaunch --api --cors-allow-origins='*' --enable-insecure-extension-access  "$@"
+}
+
+unalias lol 2> /dev/null
+lol() {
+    cd "$AI/lollms"
+    conda activate "${1:-lollms}"
+    python app.py
+}
 
 case $1 in
     o) ostart "$@" ;;

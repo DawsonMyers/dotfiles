@@ -22,7 +22,7 @@ install_aliaser_dev() {
   ali_log_info "Creating necessary directories and files..."
   mkdir -p ~/.dotfiles/utils/aliaser
   touch ~/.dotfiles/utils/aliaser/aliases.json
-  [[ ! -e ~/.dotfiles/utils/aliaser/aliases.json ]] && echo '{}' > ~/.dotfiles/utils/aliaser/aliases.json
+  [[ ! -s ~/.dotfiles/utils/aliaser/aliases.json ]] && echo '{}' > ~/.dotfiles/utils/aliaser/aliases.json
   cp aliaser.sh ~/.dotfiles/utils/aliaser/
   chmod +x ~/.dotfiles/utils/aliaser/aliaser.sh
   ali_log_info "Directories and files created successfully! 📁"

@@ -136,3 +136,5 @@ function prompt_cmd_add () {
 [[ ! $PROMPT_COMMAND =~ "history -a" ]] && PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND} history -a;"
 # Set history timestamp format
 # HISTTIMEFORMAT='%F %T
+
+export EDITOR='code --no-sandbox --user-data-dir /home/dawson '

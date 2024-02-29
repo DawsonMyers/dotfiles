@@ -1,1 +1,0 @@
-./aliaser.v2.sh

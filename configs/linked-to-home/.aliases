@@ -34,8 +34,8 @@ alias cinfo="conda info "
 alias cinfoe="conda info --env"
 alias cenvs="conda info --env"
 alias cenv="conda info --env | grep '*' | grep -E '\w+$'"
-alias cdac="conda deactivate "
-alias cac="conda activate "
+alias cdac="conda deactivate"
+alias cac="conda activate"
 export CONDA_HOME=/home/dawson/.local/anaconda3
 
 ## pip
@@ -97,6 +97,7 @@ alias cic='bind "set completion-ignore-case on"' # cic:          Make tab-comple
 alias src='source ~/.bashrc'                # src:          Reload .bashrc file
 ####################################################
 
+alias fbdf='firebase deploy --only functions'
 alias fbdf='firebase deploy --only functions'
 
 alias @p="echo $PATH | sed 's/:/\n/g'"
