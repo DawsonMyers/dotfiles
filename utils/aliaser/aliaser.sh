@@ -6,6 +6,7 @@ export ALI_RED='\033[0;31m'
 export ALI_GREEN='\033[0;32m'
 export ALI_YELLOW='\033[1;33m'
 export ALI_CYAN='\033[0;36m'
+export ALI_PURPLE='\033[0;35m'
 export ALI_NC='\033[0m' # No color
 
 export ALI_HOME="$HOME/dotfiles/utils/aliaser"
@@ -29,6 +30,10 @@ ali_log_verb() {
   echo -e "${ALI_CYAN}VERB:${ALI_NC} $1"
 }
 
+ali_log_debug() {
+    echo -e "${ALI_PURPLE}\033[1;4mDEBUG:${ALI_NC} ${ALI_PURPLE}$*${ALI_NC}"
+}
+
 ali_func_trace() {
   local caller_info=$(caller)
   local line_number=$(echo "$caller_info" | awk '{print $1}')
@@ -48,13 +53,14 @@ ali_error() {
 reload_aliases() {
   # Unalias all existing aliases
   while IFS= read -r ALIAS; do
-    alias $ALIAS &> /dev/null &&  unalias "$ALIAS"
+    alias "$ALIAS" &> /dev/null &&  unalias "$ALIAS"
   done < <(jq -r 'keys[]' $ALIAS_FILE)
 
   # Load all aliases
   while IFS= read -r ALIAS; do
-    ALIAS_COMMAND=$(jq -r ".$ALIAS" $ALIAS_FILE)
-    alias "$ALIAS=$ALIAS_COMMAND"
+    ALIAS_COMMAND=$(jq -r ".[\"$ALIAS\"]" $ALIAS_FILE)
+    # ali_log_debug "Setting alias '$ALIAS' to '$ALIAS_COMMAND'"
+    alias "$ALIAS"="$ALIAS_COMMAND"
   done < <(jq -r 'keys[]' "$ALIAS_FILE")
 }
 
@@ -72,7 +78,7 @@ ali_set() {
     ali_log_info "Creating new alias file at $ALIAS_FILE."
     echo '{}' > "$ALIAS_FILE"
   fi
-  if jq -e ".$1" "$ALIAS_FILE" >/dev/null; then
+  if jq -e ".[\"$1\"]" "$ALIAS_FILE" >/dev/null; then
     ali_log_warn "Alias '$1' already exists. It will be overwritten."
   fi
 
@@ -85,7 +91,7 @@ ali_set() {
 alias ali_add=ali_set 
 
 ali_get() {
-  ALIAS_COMMAND=$(jq -r ".$1" "$ALIAS_FILE")
+  ALIAS_COMMAND=$(jq -r ".[\"$1\"]" $ALIAS_FILE)
   if [ "$ALIAS_COMMAND" == "null" ]; then
     ali_log_err "Alias '$1' does not exist."
   else
@@ -106,8 +112,8 @@ ali_list() {
 ali_ls() { ali_list "$@"; }
 
 ali_remove() {
-  if jq -e ".$1" "$ALIAS_FILE" >/dev/null; then
-    jq "del(.$1)" "$ALIAS_FILE" > temp.json && mv temp.json "$ALIAS_FILE"
+  if jq -e ".[\"$1\"]" "$ALIAS_FILE" >/dev/null; then
+    jq "del(.[\"$1\"])" "$ALIAS_FILE" > temp.json && mv temp.json "$ALIAS_FILE"
     ali_log_info "Alias '$1' has been removed."
     reload_aliases
   else
