@@ -1,3 +1,4 @@
+export AI_UTILS='/home/dawson/dotfiles/env-utils/ai-utils.sh'
 export AI=/home/dawson/code/projects/ai
 export OOB=$AI/oobabooga/text-generation-webui
 export OOB1=$AI/oobabooga/tg
@@ -8,6 +9,7 @@ export STX=$AI/SillyTavern/SillyTavern-extras
 export AI_MODELS=$AI/models
 export CONDA_PATH="$HOME/anaconda3"
 
+alias eai="code $AI_UTILS"
 alias cdai="cd $AI"
 alias cdoob="cd $OOB"
 alias cdsd="cd $SD"
@@ -149,13 +151,15 @@ sdstart() {
     cd $SD_HOME 
     conda activate sd || { log_error "failed to activate env sd"; return 1; }
     [[ $1 == ---fix-deps ]] && shift && pip install -r requirements.txt
+    local args=
+    [[ $1 == -i ]] && shift && args=--skip-install
     local x_deepspeed= 
     local deep_opt=
     [[ $1 == -d ]] && x_deepspeed=deepspeed && deep_opt=--deepspeed && shift
     # vactivate 
     local autolaunch=--autolaunch
     [[ $1 == - ]] && shift && autolaunch=
-    $x_deepspeed ./webui.sh $deep_opt --port 7860 $autolaunch --api --cors-allow-origins='*' --enable-insecure-extension-access  "$@"
+    $x_deepspeed ./webui.sh $deep_opt --port 7860 $autolaunch --api --cors-allow-origins='*' --enable-insecure-extension-access $args "$@"
 }
 
 unalias lol 2> /dev/null
@@ -165,9 +169,16 @@ lol() {
     python app.py
 }
 
+kobold() {
+    cd "$AI/koboldcpp"
+    ./koboldcpp
+}
+kstart() { kobold; }
+
 case $1 in
     o) ostart "$@" ;;
     sd) sdstart "$@" ;;
     stx) stxstart "$@" ;;
     st) ststart "$@" ;;
 esac
+
