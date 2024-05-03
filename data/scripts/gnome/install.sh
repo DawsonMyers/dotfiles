@@ -16,7 +16,7 @@ export DF_SCRIPT_DIR="$(dirname "$(realpath "$BASH_SOURCE")")"
         log_info "Linking $s in $PWD"
         chmod u+x "$s"
         
-        [[ ! -f $path ]] && ln -sv "$PWD/$s" ~/.local/share/nautilus/scripts/
+        [[ -f $path ]] && ln -svf "$path" "$HOME/.local/share/nautilus/scripts/$s"
     done
     shopt -u dotglob
 )

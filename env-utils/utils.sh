@@ -112,3 +112,9 @@ split() {
 
     echo "$str" | sed "s/$delim/\n/g"
 }
+
+@import() {
+    cat <<<-EOF
+    
+EOF
+}

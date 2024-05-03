@@ -179,7 +179,8 @@ source ~/.environment
 
 export PATH=$PATH:/usr/local/go/bin:/usr/local/cuda/bin
 export PATH=$PATH:/home/.local/share/JetBrains/Toolbox/scripts:/home/.local/share/JetBrains/Toolbox/bin
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+:}/usr/local/cuda/lib64
+[[ -n $LD_LIBRARY_PATH ]] && LD_LIBRARY_PATH+=":/usr/local/cuda/lib64" || LD_LIBRARY_PATH=/usr/local/cuda/lib64
+export LD_LIBRARY_PATH
 export PATH="/snap/bin:$PATH"
 
 export DOCKER_HOST=unix:///run/user/1000/docker.sock

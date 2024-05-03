@@ -9,6 +9,8 @@ export STX=$AI/SillyTavern/SillyTavern-extras
 export AI_MODELS=$AI/models
 export CONDA_PATH="$HOME/anaconda3"
 
+export CUDA_VISIBLE_DEVICES=1
+
 alias eai="code $AI_UTILS"
 alias cdai="cd $AI"
 alias cdoob="cd $OOB"
@@ -65,7 +67,7 @@ link_models() {
 
 cuda_test() {
     echo 'CUDA available: ' 
-    python -c 'import torch; print(torch.cuda.is_available())'
+    python3 -c 'import torch; print(torch.cuda.is_available())'
     echo
     echo "(Ran from $DOTFILES_DIR/env-utils/utils.sh)"
 }
@@ -78,11 +80,22 @@ ttstart() {
     # p316 is a girl. Try with this (in conda env stx):
     # tts --text 'fuck me' --model_name tts_models/en/vctk/vits --speaker_id p316  --out_path o.wav && aplay o.wav
 }
+
+timestamp () 
+{ 
+    # [[ $1 == *-h* ]] && echo '~/dotfiles/env-utils/utils.sh';
+    date +"%Y-%m-%d_%H-%M-%S"
+}
+
+last_tts=
 ttsx() {
     conda activate tts
-    tts --text "$1" --model_name ${2:-'tts_models/en/vctk/vits'} --speaker_id p316 --out_path ~/test/tts/o.wav && aplay ~/test/tts/o.wav
+    mkdir -p ~/tts/keybind
+    last_tts=$(timestamp)
+    echo "$last_tts" > ~/tts/keybind/last
+    tts --text "$1" --model_name ${2:-'tts_models/en/vctk/vits'} --speaker_id p316 --out_path $last_tts && aplay $last_tts
 }
-alias replay='aplay ~/test/tts/o.wav'
+alias replay="aplay $(cat ~/tts/keybind/last)"
 
 # ststart() { cd $AI/SillyTavern && ./start.sh; }
 stxstart() { 
@@ -120,15 +133,19 @@ ostart() {
     cd $OOB
     conda activate tg
     export CUDA_VISIBLE_DEVICES=1
-    [[ $1 == ---fix-deps ]] && pip install -r requirements.txt --upgrade-strategy=only-if-needed
+    [[ $1 == --fix-deps ]] && pip install -r requirements.txt --upgrade-strategy=only-if-needed
     retry -f bash $OOB/start.sh "$@"; 
+}
+
+oostart() {
+    ostart --model "dolphin-2.8-mistral-7b-v02-Q8_0.gguf" "$@"
 }
 
 ostart1() { 
     cd $OOB
     conda activate tg1
     export CUDA_VISIBLE_DEVICES=1
-    [[ $1 == ---fix-deps ]] && pip install -r requirements.txt --upgrade-strategy=only-if-needed
+    [[ $1 == --fix-deps ]] && pip install -r requirements.txt --upgrade-strategy=only-if-needed
     retry -f bash $OOB/start.sh "$@"; 
 }
 
@@ -171,9 +188,13 @@ lol() {
 
 kobold() {
     cd "$AI/koboldcpp"
-    ./koboldcpp
+    ./koboldcpp --config ./kobold-settings.kcpps "$@"
 }
-kstart() { kobold; }
+kstart() { kobold "$@"; }
+
+aistart() {
+    mux start ai
+}
 
 case $1 in
     o) ostart "$@" ;;
