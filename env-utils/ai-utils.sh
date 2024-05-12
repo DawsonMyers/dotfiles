@@ -133,8 +133,12 @@ ostart() {
     cd $OOB
     conda activate tg
     export CUDA_VISIBLE_DEVICES=1
-    [[ $1 == --fix-deps ]] && pip install -r requirements.txt --upgrade-strategy=only-if-needed
-    retry -f bash $OOB/start.sh "$@"; 
+    [[ $1 == --fix-deps ]] && pip install -r requirements.txt --upgrade-strategy=only-if-needed && shift
+    if [[ $1 == --docker ]]; then
+        docker compose up 
+    else
+        retry -f bash $OOB/start.sh "$@"; 
+    fi
 }
 
 oostart() {
