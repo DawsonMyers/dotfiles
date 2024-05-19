@@ -10,6 +10,7 @@ register_import() {
 # Function to unregister a file from import
 unregister_import() {
     local file="$1"
+    
     # Add code here to unregister the file from import
     echo "Unregistered import: $file"
 }
@@ -22,7 +23,7 @@ handle_subcommand() {
 }
 
 # Main @import function
-import() {
+@import() {
     local subcommand="$1"
     local file="$2"
 
@@ -33,6 +34,12 @@ import() {
         unregister)
             unregister_import "$file"
             ;;
+        /*|./*)
+            handle_path_import "$file"
+            ;;
+        @*)
+            handle_registered_import "$subcommand"
+            ;;
         *)
             handle_subcommand "$subcommand"
             ;;
@@ -40,6 +47,7 @@ import() {
 }
 
 # Example usage:
-import register "/path/to/file"
-import unregister "/path/to/file"
-import custom_subcommand
+# import register "/path/to/file"
+# import unregister "/path/to/file"
+# import custom_subcommand
+# import @registered_import_id/file
