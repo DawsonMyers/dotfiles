@@ -78,7 +78,7 @@ alias omp=oh-my-posh
 alias aptupd='sudo apt update'
 alias aptupg='sudo apt upgrade'
 alias apti='sudo apt install '
-alias aptup='sudo apt update && sudo apt upgrade'
+alias aptup='sudo apt update; sudo apt upgrade'
 alias s=sudo
 
 alias gpureload="sudo rmmod -vf nvidia_uvm ; sudo modprobe -v nvidia_uvm"

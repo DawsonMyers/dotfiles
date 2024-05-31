@@ -132,7 +132,9 @@ unalias ostart 2> /dev/null
 ostart() { 
     cd $OOB
     conda activate tg
-    export CUDA_VISIBLE_DEVICES=1
+    export CUDA_VISIBLE_DEVICES=0
+
+    # export CUDA_VISIBLE_DEVICES=1
     [[ $1 == --fix-deps ]] && pip install -r requirements.txt --upgrade-strategy=only-if-needed && shift
     if [[ $1 == --docker ]]; then
         docker compose up 
@@ -180,7 +182,8 @@ sdstart() {
     # vactivate 
     local autolaunch=--autolaunch
     [[ $1 == - ]] && shift && autolaunch=
-    export CUDA_VISIBLE_DEVICES=1
+    # export CUDA_VISIBLE_DEVICES=1
+    export CUDA_VISIBLE_DEVICES=0
     $x_deepspeed ./webui.sh $deep_opt --port 7860 $autolaunch --api --cors-allow-origins='*' --enable-insecure-extension-access $args "$@"
 }
 
